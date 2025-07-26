@@ -8,7 +8,13 @@ use zed_extension_api::{
 
 const PACKAGE_NAME: &str = "@upstash/context7-mcp";
 const PACKAGE_VERSION: &str = "latest";
-const SERVER_PATH: &str = "node_modules/@upstash/context7-mcp/dist/index.js";
+let server_path = [
+    "node_modules",
+    "@upstash",
+    "context7-mcp",
+    "dist",
+    "index.js"
+].iter().fold(env::current_dir().unwrap(), |acc, segment| acc.join(segment));
 const DEFAULT_MIN_TOKENS_ENV: &str = "DEFAULT_MINIMUM_TOKENS";
 
 struct Context7ModelContextExtension;
@@ -56,11 +62,7 @@ impl zed::Extension for Context7ModelContextExtension {
 
         Ok(Command {
             command: zed::node_binary_path()?,
-            args: vec![env::current_dir()
-                .unwrap()
-                .join(SERVER_PATH)
-                .to_string_lossy()
-                .to_string()],
+            args: vec![server_path.to_string_lossy().to_string()],
             env: env_vars,
         })
     }
